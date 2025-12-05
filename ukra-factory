@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحليل الفجوة السعرية | مشروع المصنع 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text: #2b2d42;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: default; }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            color: var(--text);
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+
+        /* --- خلفية تفاعلية (Orbs) --- */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: floatOrb 20s infinite ease-in-out;
+        }
+        .orb-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--success); animation-delay: 0s; }
+        .orb-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: var(--primary); animation-delay: -5s; }
+        .orb-3 { top: 40%; left: 40%; width: 30vw; height: 30vw; background: var(--danger); opacity: 0.3; animation-delay: -10s; }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* --- الحاوية الرئيسية --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--danger));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            transform: translateZ(50px);
+        }
+
+        .hero p { font-size: 1.5rem; color: #555; max-width: 700px; margin-bottom: 40px; }
+
+        .btn-scroll {
+            padding: 15px 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-decoration: none;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.4);
+            transition: 0.3s;
+            cursor: pointer;
+            animation: pulseBtn 2s infinite;
+        }
+        .btn-scroll:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(67, 97, 238, 0.6); }
+
+        @keyframes pulseBtn {
+            0% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(67, 97, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
+        }
+
+        /* --- Marquee (شريط متحرك) --- */
+        .marquee-container {
+            width: 100%;
+            background: rgba(255,255,255,0.9);
+            padding: 15px 0;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            white-space: nowrap;
+            backdrop-filter: blur(10px);
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } }
+
+        /* --- Cards Grid (Tilt Effect) --- */
+        .grid-section { padding: 100px 0; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 2.5rem; color: var(--text); margin-bottom: 10px; }
+        .section-header span { display: block; width: 60px; height: 5px; background: var(--primary); margin: 0 auto; border-radius: 10px; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            backdrop-filter: blur(8px);
+            transition: transform 0.1s; /* JS Tilt */
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        
+        /* علامة الحالة (Status Badge) */
+        .badge {
+            position: absolute;
+            top: 20px; left: 20px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            transform: translateZ(20px);
+        }
+        .bg-danger { background: var(--danger); }
+        .bg-success { background: var(--success); }
+
+        .price-box {
+            text-align: center;
+            margin: 20px 0;
+            transform: translateZ(30px);
+        }
+        .current-price { font-size: 2rem; font-weight: 800; color: var(--danger); display: block; text-decoration: line-through; opacity: 0.7; }
+        .new-price { font-size: 2.5rem; font-weight: 900; color: var(--success); display: block; }
+        .saving { color: #2ecc71; font-weight: bold; font-size: 0.9rem; margin-top: 5px; }
+
+        /* --- Alibaba Section --- */
+        .alibaba-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 25px;
+            padding: 20px 0 40px 0;
+            scroll-snap-type: x mandatory;
+        }
+        .alibaba-scroll::-webkit-scrollbar { height: 8px; }
+        .alibaba-scroll::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        .ali-card {
+            min-width: 320px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            scroll-snap-align: center;
+            transition: 0.3s;
+            border: 1px solid #eee;
+        }
+        .ali-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+
+        .ali-img {
+            height: 180px;
+            background: #f1f2f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #ccc;
+            position: relative;
+        }
+        .ali-logo {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: #ff6a00;
+            color: white;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .ali-content { padding: 20px; }
+        .ali-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; color: #333; }
+        
+        .rating-box { display: flex; align-items: center; gap: 5px; margin-bottom: 15px; font-size: 0.9rem; color: #f1c40f; }
+        .rating-num { color: #555; font-weight: bold; }
+        
+        .ali-price { font-size: 1.4rem; font-weight: 800; color: #333; margin-bottom: 5px; }
+        .ali-shipping { font-size: 0.8rem; color: #777; margin-bottom: 15px; }
+        
+        .btn-ali {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #ff6a00;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .btn-ali:hover { background: #e65100; }
+
+        /* --- Financial Chart --- */
+        .chart-wrapper {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            margin-top: 50px;
+        }
+        .bar-row { display: flex; align-items: center; margin-bottom: 25px; }
+        .bar-label { width: 150px; font-weight: bold; }
+        .bar-track { flex: 1; height: 40px; background: #f1f2f6; border-radius: 20px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; border-radius: 20px; display: flex; align-items: center; padding-right: 20px; color: white; font-weight: bold; width: 0; transition: width 2s cubic-bezier(0.22, 1, 0.36, 1); }
+        
+        .fill-red { background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: #d63031; } /* Light Red Gradient */
+        .fill-green { background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); color: #006266; } /* Light Green Gradient */
+
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <header class="hero">
+        <div style="font-size: 5rem; margin-bottom: 20px; animation: floatOrb 5s infinite;">🏭</div>
+        <h1>مشروع تحديث المصنع 2025</h1>
+        <p>استراتيجية التحول من الهدر إلى التوفير الذكي باستخدام المصادر العالمية.</p>
+        <a href="#analysis" class="btn-scroll">بدء الجولة التفاعلية ⬇</a>
+    </header>
+
+    <div class="marquee-container">
+        <div class="marquee-content">
+            ⚡ تنبيه: ماكينة التغليف في العرض الحالي بـ 90,000 ريال (سعر السوق 18,000) ⚡ فرصة: استيراد KDT Nesting يوفر مساحة وعمالة ⚡ المجموع الحالي: 718,750 ريال ⚡ المجموع المقترح: 419,750 ريال ⚡
+        </div>
+    </div>
+
+    <div class="container">
+
+        <section id="analysis" class="grid-section">
+            <div class="section-header">
+                <h2>تحليل الفجوة المباشر</h2>
+                <span></span>
+            </div>
+
+            <div class="cards-grid">
+                <div class="glass-card js-tilt">
+                    <span class="badge bg-danger">فارق سعر +400%</span>
+                    <h3>📦 ماكينة التغليف</h3>
+                    <p style="color:#666; margin-top:10px;">بند غير مبرر في العرض الحالي</p>
+                    <div class="price-box">
+                        <span class="current-price">90,000 ر.س</span>
+                        <span class="new-price">~18,000 ر.س</span>
+                        <div class="saving">توفير فوري: 72,000 ريال</div>
+                    </div>
+                    <p style="font-size:0.9rem; color:#888; text-align:center;">البديل: شراء محلي (السوق السعودي)</p>
+                </div>
+
+                <div class="glass-card js-tilt">
+                    <span class="badge bg-danger">تقنية قديمة</span>
+                    <h3>🪚 منشار Beam Saw</h3>
+                    <p style="color:#666; margin-top:10px;">سعر مرتفع مقابل تقنية تقليدية</p>
+                    <div class="price-box">
+                        <span class="current-price">175,000 ر.س</span>
+                        <span class="new-price">~110,000 ر.س</span>
+                        <div class="saving">سعر الاستيراد العادل</div>
+                    </div>
+                    <p style="font-size:0.9rem; color:#888; text-align:center;">البديل: الاستيراد المباشر أو المستعمل</p>
+                </div>
+
+                <div class="glass-card js-tilt" style="border-color: var(--success);">
+                    <span class="badge bg-success">الحل الذكي</span>
+                    <h3>🚀 تقنية Nesting</h3>
+                    <p style="color:#666; margin-top:10px;">قص + حفر (ماكينة واحدة بدل اثنتين)</p>
+                    <div class="price-box">
+                        <span class="current-price" style="text-decoration: none; color:#555; font-size:1.2rem;">التكلفة التقليدية: 345k</span>
+                        <span class="new-price">~210,000 ر.س</span>
+                        <div class="saving">توفير في السعر + العمالة</div>
+                    </div>
+                    <p style="font-size:0.9rem; color:#888; text-align:center;">الماركات: KDT / Nanxing / Blue Elephant</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-section">
+            <div class="section-header">
+                <h2>🌐 بدائل من علي بابا (أسعار السوق)</h2>
+                <p style="color:#666;">روابط مباشرة لمنتجات مماثلة للتقرير بأسعار واقعية</p>
+                <span></span>
+            </div>
+
+            <div class="alibaba-scroll">
+                
+                <div class="ali-card">
+                    <div class="ali-img">
+                        🏗️
+                        <span class="ali-logo">Alibaba</span>
+                    </div>
+                    <div class="ali-content">
+                        <div class="ali-title">KDT/Nanxing Nesting CNC Machine</div>
+                        <div class="rating-box">
+                            <span>⭐⭐⭐⭐⭐</span>
+                            <span class="rating-num">4.9 (120 تقييم)</span>
+                        </div>
+                        <div class="ali-price">180,000 - 220,000 ريال</div>
+                        <div class="ali-shipping">السعر تقديري واصل للميناء (CIF)</div>
+                        <a href="https://www.alibaba.com/trade/search?fsb=y&IndexArea=product_en&CatId=&SearchText=nesting+cnc+machine+kdt+nanxing" target="_blank" class="btn-ali">🔍 بحث عن الماكينة</a>
+                    </div>
+                </div>
+
+                <div class="ali-card">
+                    <div class="ali-img">
+                        🪚
+                        <span class="ali-logo">Alibaba</span>
+                    </div>
+                    <div class="ali-content">
+                        <div class="ali-title">Computer Beam Saw (Heavy Duty)</div>
+                        <div class="rating-box">
+                            <span>⭐⭐⭐⭐½</span>
+                            <span class="rating-num">4.7 (Verified)</span>
+                        </div>
+                        <div class="ali-price">56,000 - 90,000 ريال</div>
+                        <div class="ali-shipping">فرق هائل عن عرض 175 ألف!</div>
+                        <a href="https://www.alibaba.com/trade/search?fsb=y&IndexArea=product_en&CatId=&SearchText=cnc+beam+saw+woodworking+machine" target="_blank" class="btn-ali">🔍 عرض الأسعار</a>
+                    </div>
+                </div>
+
+                <div class="ali-card">
+                    <div class="ali-img">
+                        📦
+                        <span class="ali-logo">Alibaba</span>
+                    </div>
+                    <div class="ali-content">
+                        <div class="ali-title">Pallet Stretch Wrapping Machine</div>
+                        <div class="rating-box">
+                            <span>⭐⭐⭐⭐⭐</span>
+                            <span class="rating-num">4.8 (Top Seller)</span>
+                        </div>
+                        <div class="ali-price">4,000 - 12,000 ريال</div>
+                        <div class="ali-shipping">هذا هو السعر الحقيقي للماكينة</div>
+                        <a href="https://www.alibaba.com/trade/search?fsb=y&IndexArea=product_en&CatId=&SearchText=pallet+stretch+wrapping+machine" target="_blank" class="btn-ali">🔍 تأكد من السعر</a>
+                    </div>
+                </div>
+
+                <div class="ali-card">
+                    <div class="ali-img">
+                        📏
+                        <span class="ali-logo">Alibaba</span>
+                    </div>
+                    <div class="ali-content">
+                        <div class="ali-title">Auto Edge Bander (Pre-milling)</div>
+                        <div class="rating-box">
+                            <span>⭐⭐⭐⭐</span>
+                            <span class="rating-num">4.6 (Supplier)</span>
+                        </div>
+                        <div class="ali-price">45,000 - 75,000 ريال</div>
+                        <div class="ali-shipping">مقابل 150 ألف في العرض المحلي</div>
+                        <a href="https://www.alibaba.com/trade/search?fsb=y&IndexArea=product_en&CatId=&SearchText=automatic+edge+banding+machine+pre+milling" target="_blank" class="btn-ali">🔍 عرض الخيارات</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="chart-wrapper">
+            <div class="section-header">
+                <h2>💰 الحصاد النهائي</h2>
+            </div>
+            
+            <div class="bar-row">
+                <div class="bar-label">العرض الحالي</div>
+                <div class="bar-track">
+                    <div class="bar-fill fill-red" data-width="100%">718,750 ريال</div>
+                </div>
+            </div>
+
+            <div class="bar-row">
+                <div class="bar-label">البديل المقترح</div>
+                <div class="bar-track">
+                    <div class="bar-fill fill-green" data-width="58%">419,750 ريال</div>
+                </div>
+            </div>
+            
+            <p style="text-align: center; margin-top: 30px; font-size: 1.2rem;">
+                إجمالي الوفر المحقق: <span style="color:var(--success); font-weight:800; font-size:1.5rem;">299,000 ريال سعودي</span>
+            </p>
+        </section>
+
+    </div>
+
+    <script>
+        // 1. Tilt Effect Logic (Simple custom implementation)
+        const cards = document.querySelectorAll('.js-tilt');
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10; // Max rotation deg
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+
+        // 2. Chart Animation on Scroll
+        const bars = document.querySelectorAll('.bar-fill');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    bars.forEach(bar => {
+                        bar.style.width = bar.getAttribute('data-width');
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        observer.observe(document.querySelector('.chart-wrapper'));
+    </script>
+</body>
+</html>
